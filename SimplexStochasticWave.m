@@ -27,7 +27,7 @@ w_max= args.FreqRange(2)*2*pi*(1/T_wave);  %% What Range of frequencies will be 
 w_min= args.FreqRange(1);
 
 
-if isempty(Gamma_lu)
+if isempty(Gamma_nu)
     load('PolySurge_inputs.mat', 'Gamma_nu'); 
 end
 %% Function for the amplitude of the wave depending on the frequency 
