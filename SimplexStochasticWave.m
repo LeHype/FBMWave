@@ -14,7 +14,7 @@ arguments
     args.DrawDebug  (1,1) {boolean} = false;         %If selected the wave is drawn forever
     
 end
-persistent Gamma_lu
+persistent Gamma_nu
 d_W = args.d_W;
 N_freq = args.N_freq;  
 H_wave = args.H_wave;

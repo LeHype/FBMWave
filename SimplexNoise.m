@@ -12,7 +12,9 @@ function s = SimplexNoise(m,args)
     i = 0;
     while w > 3
         i = i + 1;
-        d = interp2(randn([m,m]), i-1, 'spline');
+        % least number of random values necessary to have size(d) >= m
+        n = ceil((m-1)/2^(i-1)+1); 
+        d = interp2(randn([n,n]), i-1, 'spline');
         s = s + i * d(1:m, 1:m);
         w = w - ceil(w/2 - 1);
     end
