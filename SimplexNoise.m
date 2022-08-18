@@ -7,12 +7,11 @@ function s = SimplexNoise(m,args)
   
   
   rng(args.Seed);
-%   disp('Generarting new Map')
+
   s = zeros([m,m]);     % Prepare output image (size: m x m)
   w = m;
   i = 0;
   while w > 3
-    
     i = i + 1;
     d = interp2(randn([m,m]), i-1, 'spline');
     s = s + i * d(1:m, 1:m);
