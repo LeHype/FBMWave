@@ -16,5 +16,5 @@ function s = SimplexNoise(m,args)
         s = s + i * d(1:m, 1:m);
         w = w - ceil(w/2 - 1);
     end
-    s = (s - min(min(s(:,:)))) ./ (max(max(s(:,:))) - min(min(s(:,:))));
+    s = (s - min(s, [], 'all')) ./ (max(s, [], 'all') - min(s, [], 'all'));
 end
