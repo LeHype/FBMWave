@@ -27,7 +27,7 @@ w_max= args.FreqRange(2)*2*pi*(1/T_wave);  %% What Range of frequencies will be 
 w_min= args.FreqRange(1);
 
 
-if isempty(Gamma_nu)
+if ~exist('Gamma_nu')
     load('PolySurge_inputs.mat', 'Gamma_nu'); 
 end
 %% Function for the amplitude of the wave depending on the frequency 
@@ -50,6 +50,7 @@ IndividualWaves = zeros(length(DataSample),1);
 %% The final Wave is the sum over all the individual waves
 %% Two sources of randomness are Amplitude offse and Phase Offset
 %% Both calculated using an individual map and Seed
+
 for i=1:length(DataSample)
        AmplitudeOffset = 0.75+ 0.5*Simplex(t,"Seed",(args.Seed+i+100),'warpFactor',args.AmpWarp);
        PhaseOffset =    2*pi*Simplex(t,"Seed",(args.Seed+i+200),'warpFactor',args.PhaseWarp)  ;   

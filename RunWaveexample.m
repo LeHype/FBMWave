@@ -1,5 +1,5 @@
-t = 200; % How long to run the wave
-Nfreq = 15; % How many frequencies to run
+t = 200;    % How long to run the wave
+Nfreq = 20; % How many frequencies to run
 
 
 
@@ -16,6 +16,7 @@ end
 % plot(IndWaves(:,2))
 figure
 plot(Waves)
+mean(abs(Waves))
 %%
 figure
 for i = 1:Nfreq
