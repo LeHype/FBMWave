@@ -3,18 +3,18 @@ function [waveDisturbance varargout]= SimplexStochasticWave(t, args)
 
 arguments    
     t               (1,1) {mustBeNumeric}
-    args.T_wave     (1,1) {mustBeNumeric} = 10      % Period of dominant Wave 
-    args.H_wave     (1,1) {mustBeNumeric}= 90       % Hight factor
-    args.N_freq     (1,1) {mustBeNumeric}= 10       %Number of Frequencies in Wave
-    args.d_W        (1,1) {mustBeNumeric}= pi/20
-    args.FreqRange  (2,1) {mustBeNumeric}= [0.05 3] %Range of frequencies in terms of multiple of T_wave
+    args.T_wave     (1,1) {mustBeNumeric} = 10       % Period of dominant Wave 
+    args.H_wave     (1,1) {mustBeNumeric} = 90       % Hight factor
+    args.N_freq     (1,1) {mustBeNumeric} = 10       %Number of Frequencies in Wave
+    args.d_W        (1,1) {mustBeNumeric} = pi/20
+    args.FreqRange  (2,1) {mustBeNumeric} = [0.05 3] %Range of frequencies in terms of multiple of T_wave
     args.AmpWarp    (1,1) {mustBeNumeric} = 2
     args.PhaseWarp  (1,1) {mustBeNumeric} = 0.2
     args.Seed       (1,1) {mustBeNumeric} = 1
-    args.DrawDebug  (1,1) {boolean} = false;        %If selected the wave is drawn forever
+    args.DrawDebug  (1,1) {boolean} = false;         %If selected the wave is drawn forever
     
 end
-persistent Gamma_lu
+persistent Gamma_nu
 d_W = args.d_W;
 N_freq = args.N_freq;  
 H_wave = args.H_wave;
@@ -63,14 +63,15 @@ varargout{1} = IndividualWaves;
 %% If Debug feature is selected the function enters into an infinite loop here
 if args.DrawDebug
     increment = 0.5;
-    f = figure(1)
+    f = figure(1);
 
     x1= [0 1];
     y1= [NewStochasticWave(0) NewStochasticWave(increment)];
-    p = plot(x1,y1)
-p.XDataSource = 'x1';
-p.YDataSource = 'y1';
-k = 2*increment;
+    p = plot(x1,y1);
+    p.XDataSource = 'x1';
+    p.YDataSource = 'y1';
+    k = 2*increment;
+    
 while(args.DrawDebug)
     [wave Individual]= SimplexStochasticWave(k,'N_freq',args.N_freq);
     x1 = [x1 k];
@@ -78,8 +79,6 @@ while(args.DrawDebug)
     k = k+increment;
     refreshdata(f,'caller')
     drawnow
-
-
 end
 end
 

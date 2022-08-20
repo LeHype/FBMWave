@@ -5,21 +5,16 @@ Nfreq = 20; % How many frequencies to run
 
 IndWaves = zeros(t,Nfreq); 
 Waves = zeros(t,1);
+
 for i = 1:t
-
-
-[wave Individual] = SimplexStochasticWave(i,'N_freq',Nfreq,'Seed',2);
-IndWaves(i,:) = Individual;
-Waves(i) = wave;
+    [wave, Individual] = SimplexStochasticWave(i,'N_freq',Nfreq,'Seed',2);
+    IndWaves(i,:) = Individual;
+    Waves(i) = wave;
 end
-% figure
-% plot(IndWaves(:,2))
-figure
+
+figure(1)
 plot(Waves)
 mean(abs(Waves))
 %%
-figure
-for i = 1:Nfreq
-    plot(IndWaves(:,i))
-    hold on 
-end
+figure(2)
+plot(IndWaves)
