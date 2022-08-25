@@ -19,4 +19,5 @@ function s = SimplexNoise(m,args)
         w = w - ceil(w/2 - 1);
     end
     s = (s - min(s, [], 'all')) ./ (max(s, [], 'all') - min(s, [], 'all'));
+%       s = histeq(s);
 end

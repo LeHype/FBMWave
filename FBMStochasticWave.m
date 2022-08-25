@@ -1,10 +1,11 @@
-function [waveDisturbance varargout]= SimplexStochasticWave(t, args)
+function [waveDisturbance varargout]= FBMStochasticWave(t, args)
 
 
 arguments    
     t               (1,1) {mustBeNumeric}
     args.T_wave     (1,1) {mustBeNumeric} = 10       % Period of dominant Wave 
     args.H_wave     (1,1) {mustBeNumeric} = 90       % Hight factor
+    args.TargetAmp  (1,1) {mustBeNumeric} = 1e6; 
     args.N_freq     (1,1) {mustBeNumeric} = 10       %Number of Frequencies in Wave
     args.d_W        (1,1) {mustBeNumeric} = pi/20
     args.FreqRange  (2,1) {mustBeNumeric} = [0.05 3] %Range of frequencies in terms of multiple of T_wave
@@ -12,9 +13,10 @@ arguments
     args.PhaseWarp  (1,1) {mustBeNumeric} = 0.2
     args.Seed       (1,1) {mustBeNumeric} = 1
     args.DrawDebug  (1,1) {boolean} = false;         %If selected the wave is drawn forever
-    
+     
 end
 persistent Gamma_nu
+persistent Power
 d_W = args.d_W;
 N_freq = args.N_freq;  
 H_wave = args.H_wave;
@@ -27,9 +29,9 @@ w_max= args.FreqRange(2)*2*pi*(1/T_wave);  %% What Range of frequencies will be 
 w_min= args.FreqRange(1);
 
 
-if ~exist('Gamma_nu')
+% if isempty('Gamma_nu')
     load('PolySurge_inputs.mat', 'Gamma_nu'); 
-end
+% end
 %% Function for the amplitude of the wave depending on the frequency 
 waveSpectrum = @(w) 262.9*H_wave^2*T_wave^(-4)*w^(-5)*exp(-1054*T_wave^(-4)*w^(-4));
 %% Actual sample of wave frequencies
@@ -41,24 +43,47 @@ Gamma_nu = [[0  Gamma_nu(1,2)] ;Gamma_nu];
 Gamma = @(w) interp1(Gamma_nu(:,1), Gamma_nu(:,2), w);
 
 
- 
+ %% Rescale the Wave depending on the Sum of Amplitudes
+varmap = strcat('f',num2str(args.N_freq));
 
+if (~isfield(Power, varmap))
+    Power.(varmap) = 1;
+    disp('New Frequency scaled')
+    Temp = zeros(100,1);
+    for i = 1:1000
+        [Temp(i),~] = FBMStochasticWave(i,'N_freq',N_freq,'Seed',args.Seed);
+    end
+    Power.(varmap) = args.TargetAmp/mean(abs(Temp));
+end
 
+ %
 waveDisturbance=0;
 IndividualWaves = zeros(length(DataSample),1);
 
 %% The final Wave is the sum over all the individual waves
 %% Two sources of randomness are Amplitude offse and Phase Offset
 %% Both calculated using an individual map and Seed
+%%\\TODO Make persitent
+seedPhrase = args.Seed;
+
+rng(seedPhrase,'philox');
+randomShift = rand(1,length(DataSample))*2*pi;
 
 for i=1:length(DataSample)
-       AmplitudeOffset = 0.75+ 0.5*Simplex(t,"Seed",(args.Seed+i+100),'warpFactor',args.AmpWarp);
-       PhaseOffset =    2*pi*Simplex(t,"Seed",(args.Seed+i+200),'warpFactor',args.PhaseWarp)  ;   
-       IndividualWaves(i)= AmplitudeOffset*Ak(DataSample(i)).*Gamma(DataSample(i)).*sin(DataSample(i).*t+PhaseOffset);
+%        AmplitudeOffset = 0.75+ 0.5*FBM(t,"Seed",(args.Seed+i+100),'warpFactor',args.AmpWarp);
+        AmplitudeOffset = 1;
+        PhaseOffset =    randomShift(i)+2*pi*FBM(t,"Seed",(args.Seed+i+200),'warpFactor',args.PhaseWarp)  ;   
+%         PhaseOffset =   2*pi*FBM(t,"Seed",(args.Seed+i+200),'warpFactor',args.PhaseWarp)  ;   
+    
+          IndividualWaves(i)= Power.(varmap)*AmplitudeOffset*Ak(DataSample(i)).*Gamma(DataSample(i)).*sin(DataSample(i).*t+PhaseOffset);
+%           IndividualWaves(i)=PhaseOffset;   
+
 end
 waveDisturbance = sum(IndividualWaves);
-varargout= cell(1,1);
-varargout{1} = IndividualWaves;
+varargout= cell(3);
+varargout{1} = arrayfun(@(w) Ak(w),DataSample).*arrayfun(@(w) Gamma(w),DataSample);
+varargout{2} = IndividualWaves;
+% varargout{3} =Prediction;
 
 %% If Debug feature is selected the function enters into an infinite loop here
 if args.DrawDebug
