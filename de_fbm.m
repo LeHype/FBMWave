@@ -2,7 +2,7 @@ clearvars
 tic
 
 % parpool(4);
-n_dec = 10; % for each wind turbine two coordinates are needed
+n_dec = 100; % for each wind turbine two coordinates are needed
 lb = -ones(n_dec, 1)*10;
 ub = ones(n_dec, 1)*10;
 %% DE parameters
@@ -23,7 +23,7 @@ constr_weight = 1;
 % stopping criterion is a min number of evolutions, a relative enhancement
 % over the last 1000 iterations, a max number of evolutions, and a measure
 % how far the population is spread
-stopping_criterion    = @(nEvo, b, fit, cv) (nEvo > 1e2 && abs((b(end-99)-b(end))/b(end)) <= 0.001) || nEvo > 5e2 || ...
+stopping_criterion    = @(nEvo, b, fit, cv) (nEvo > 1e2 && abs((b(end-99)-b(end))/b(end)) <= 0.001) || nEvo > 5e3 || ...
     (abs((min(fit)-max(fit))/min(fit)) < 1e-6 && min(cv) == 0) || max(fit)-min(fit)<=1e-6;
 
 %% Initialize population
@@ -39,7 +39,6 @@ lowest_constr_value_idc = find(constr_violations == min(constr_violations));
 best_idx = lowest_constr_value_idc(lowest_fitness_idx);
 best_fitness = [fitness(best_idx)];
 
-% best_fitness = [];
 %do evolutions until stopping criterion is fulfilled
 while ~stopping_criterion(nEvolutions, best_fitness, fitness, constr_violations)
     % randomly select vectors for generating the donor vector
@@ -136,6 +135,6 @@ end
 function [violations, value] = constr_fun(decvars)
 % constr function that does not have any constraints (I was too lazy to
 % delete all the constraints related code)
-    violations = zeros(1, length(decvars));
-    value = zeros(1, length(decvars));
+    violations = zeros(1, size(decvars, 2));
+    value = zeros(1, size(decvars, 2));
 end
