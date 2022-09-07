@@ -130,6 +130,7 @@ toc
 function fitness = match_random(decvars)
 % use parfeval for calculating the histograms and matching them
     fitness = sum(decvars.^2, 1);
+    %% Here is your interface. Generate Function for fitness and return [1 n_mem].
 end
 
 function [violations, value] = constr_fun(decvars)
