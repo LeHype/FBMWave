@@ -17,7 +17,7 @@ don_probabability     = 0.85; % probability of interchanging values with the don
 F                     = @(x) randn( 1, n_mem ).^2; % scaling factor of DE
 % F                   = @(x) 0.65*ones(1,n_mem);
 
-use_constr_values = true;
+use_constr_values = false;
 constr_weight = 1;
 
 % stopping criterion is a min number of evolutions, a relative enhancement
@@ -137,4 +137,5 @@ function [violations, value] = constr_fun(decvars)
 % delete all the constraints related code)
     violations = zeros(1, size(decvars, 2));
     value = zeros(1, size(decvars, 2));
+    value = max(value, 0);
 end
