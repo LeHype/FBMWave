@@ -5,7 +5,7 @@ arguments
     t               (1,1) {mustBeNumeric}
     args.T_wave     (1,1) {mustBeNumeric} = 10       % Period of dominant Wave 
     args.H_wave     (1,1) {mustBeNumeric} = 90       % Hight factor
-    args.TargetAmp  (1,1) {mustBeNumeric} = 1e6; 
+    args.TargetAmp  (1,1) {mustBeNumeric} = 3e6; 
     args.N_freq     (1,1) {mustBeNumeric} = 10       %Number of Frequencies in Wave
     args.d_W        (1,1) {mustBeNumeric} = pi/20
     args.FreqRange  (2,1) {mustBeNumeric} = [0.05 3] %Range of frequencies in terms of multiple of T_wave
@@ -31,6 +31,7 @@ w_min= args.FreqRange(1);
 
 % if isempty('Gamma_nu')
     load('PolySurge_inputs.mat', 'Gamma_nu'); 
+    load('PolySurge_inputs.mat', 'Gamma_lu'); 
 % end
 %% Function for the amplitude of the wave depending on the frequency 
 waveSpectrum = @(w) 262.9*H_wave^2*T_wave^(-4)*w^(-5)*exp(-1054*T_wave^(-4)*w^(-4));
@@ -39,10 +40,11 @@ DataSample = (w_min:(w_max-w_min)/(N_freq-1):w_max);
 %% Calculate AK
 Ak =@(w) (2*d_W*waveSpectrum(w))^0.5;
 % Calculate exitation coeficient 
-Gamma_nu = [[0  Gamma_nu(1,2)] ;Gamma_nu];
-Gamma = @(w) interp1(Gamma_nu(:,1), Gamma_nu(:,2), w);
+% Gamma_nu = [[0  Gamma_nu(1,2)] ;Gamma_nu];
+% Gamma = @(w) interp1(Gamma_nu(:,1), Gamma_nu(:,2), w);
 
-
+p = polyfit(Gamma_lu.omega,Gamma_lu.Gamma,1);
+Gamma = @(w) polyval(p,w);
  %% Rescale the Wave depending on the Sum of Amplitudes
 varmap = strcat('f',num2str(args.N_freq));
 
