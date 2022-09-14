@@ -63,7 +63,8 @@ while ~stopping_criterion(nEvolutions, best_fitness, fitness, constr_violations)
     disp(['Phasewarp = ' num2str(decvars(2,best_idx))]);
     disp(['T_wave = ' num2str(decvars(3,best_idx))]);
     best_dec_vars=[best_dec_vars decvars(:,best_idx)];
-    save(filename, 'best_dec_vars', 'best_fitness');
+    
+    save(filename, 'best_dec_vars', 'best_fitness','decvars');
     
     
     donor_parents = zeros(3, n_mem);
