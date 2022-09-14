@@ -1,13 +1,13 @@
 function fitness = match_random(decvars)
 Bins = [-1E9:5E6:1E9]; % So far the best way i found was to check the input function
                        % and manually adjust the bins. 
-use_DF = true;
-use_derivative = false;
+use_DF = false;
+use_derivative = true;
                        
                        
 dt = 0.25;               % Time increment
-T = 2000;                % Time Horizon
-N_Seeds = 19;           % Number of different seeds used
+T = 1000;                % Time Horizon
+N_Seeds = 18;           % Number of different seeds used
 persistent H1          % Histogramm of input Wave is the same everytime
 persistent DH1         % Histogramm of Derivative
 persistent DF1         % Dominant Frequency
@@ -26,7 +26,7 @@ for i = 1: size(decvars,2)
 
     if isempty(H1)
         disp('beep boop')
-    F1 =@(s,t) arrayfun(@(t) NewStochasticWave(t,'randomseed',s),t);
+    F1 = @(s,t) arrayfun(@(t) NewStochasticWave(t,'randomseed',s),t);
     seeds1 = [30:1:30+N_Seeds];
     S1 = zeros(length(seeds1),length(time));
     parfor j = 1:length(seeds1)
@@ -47,7 +47,7 @@ for i = 1: size(decvars,2)
     seeds2 = [1:1:1+N_Seeds];
     S2 = zeros(length(seeds2),length(time));
     parfor j = 1:length(seeds2)
-        S2(j,:) = F1(seeds2(j),time);
+        S2(j,:) = F2(seeds2(j),time);
     end
     
 %     S2.wait;

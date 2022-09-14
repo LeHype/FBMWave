@@ -1,10 +1,11 @@
 clearvars
+clear match_random
 tic
 
 %Saving the decvars and best fitness to a mat file in 
 %case Matlab crashes.
 best_dec_vars = [];     % Keep track of best decvars 
-filename = ['Against_Old_Implementation' datestr(now,'HH_MM')];
+filename = ['Against_Old_Implementation' datestr(now,'yymmdd_hhMM')];
 
 
 % parpool(4);
@@ -12,7 +13,7 @@ n_dec = 3;  % for each wind turbine two coordinates are needed
 lb = [3 0 0.1]';
 ub = [60 8 100]';
 
-NumCores = 20;  % Specify the number of cores to run
+NumCores = 20; % Specify the number of cores to run
                % Choose n < max(n) for memory reasons
                %Create Paralell Pool
 para_start_up(NumCores);
@@ -24,8 +25,9 @@ constraint_compliance = "flip"; % Select if and how to handle wind turbines leav
 donor_style = 'rand'; % Select if the first point of the DE mutation is a random point ('rand') or the best
 % individuum ('best')
 
-don_probabability     = 0.85; % probability of interchanging values with the donor vector
-F                     = @(x) randn( 1, n_mem ).^2; % scaling factor of DE
+don_probabability   = 0.85; % probability of interchanging values with the donor vector
+% F                     = @(x) rand   ( 1, n_mem ); % scaling factor of DE
+F                   = @(x) randn( 1, n_mem ).^2;
 % F                   = @(x) 0.65*ones(1,n_mem);
 
 use_constr_values = false;
@@ -34,8 +36,7 @@ constr_weight = 1;
 % stopping criterion is a min number of evolutions, a relative enhancement
 % over the last 1000 iterations, a max number of evolutions, and a measure
 % how far the population is spread
-stopping_criterion    = @(nEvo, b, fit, cv) (nEvo > 1e2 && abs((b(end-99)-b(end))/b(end)) <= 0.001) || nEvo > 5e3 || ...
-    (abs((min(fit)-max(fit))/min(fit)) < 1e-6 && min(cv) == 0) || max(fit)-min(fit)<=1e-6;
+stopping_criterion    = @(nEvo, b, fit, cv) (nEvo > 1e2) || (b(end) <= -1.99) || ((nEvo>40) && (abs(b(end)-b(end-39)) < 1e-4 ) );
 
 %% Initialize population
 decvars = [unifrnd( lb.*ones(1, n_mem), ub.*ones(1, n_mem), n_dec, n_mem )];
@@ -56,11 +57,11 @@ best_fitness = [fitness(best_idx)];
 while ~stopping_criterion(nEvolutions, best_fitness, fitness, constr_violations)
     % randomly select vectors for generating the donor vector
     disp(['Number of Evolutions = ' num2str(nEvolutions)]);
-    disp(['best Fitness = ' num2str(best_fitness)]);
-    disp(['best decision Variables   =' ]);
+    disp(['best Fitness = ' num2str(best_fitness(end))]);
+    disp(['best decision Variables:' ]);
     disp(['N_freq = ' num2str(decvars(1,best_idx)) ]) ;
     disp(['Phasewarp = ' num2str(decvars(2,best_idx))]);
-    disp(['T_wave' num2str(decvars(3,best_idx))]);
+    disp(['T_wave = ' num2str(decvars(3,best_idx))]);
     best_dec_vars=[best_dec_vars decvars(:,best_idx)];
     save(filename, 'best_dec_vars', 'best_fitness');
     
