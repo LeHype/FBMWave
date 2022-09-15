@@ -10,15 +10,15 @@ filename = ['Against_Old_Implementation' datestr(now,'yymmdd_hhMM')];
 
 % parpool(4);
 n_dec = 3;  % for each wind turbine two coordinates are needed
-lb = [3 0 0.1]';
-ub = [60 8 100]';
+lb = [10 0 0.1]';
+ub = [50 3 30]';
 
 NumCores = 20; % Specify the number of cores to run
                % Choose n < max(n) for memory reasons
                %Create Paralell Pool
 para_start_up(NumCores);
 %% DE parameters
-n_mem                 = 40; % number of members for each generation, 20 <= n_mem <= 100
+n_mem                 = 20; % number of members for each generation, 20 <= n_mem <= 100
 constraint_compliance = "flip"; % Select if and how to handle wind turbines leaving the square
 % Possible values: "none", "border" or "flip"
 

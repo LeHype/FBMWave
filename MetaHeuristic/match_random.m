@@ -10,7 +10,7 @@ T = 1000;                % Time Horizon
 N_Seeds = 18;           % Number of different seeds used
 persistent H1          % Histogramm of input Wave is the same everytime
 persistent DH1         % Histogramm of Derivative
-persistent DF1         % Dominant Frequency
+% persistent DF1         % Dominant Frequency
 % iterate paralelly over all members
 fitness = zeros(size(decvars,2),1);
 fitness_abs = zeros(size(decvars,2),1);
@@ -40,7 +40,7 @@ for i = 1: size(decvars,2)
     SS1 = S1;
     dS1 = (SS1(3:end)-SS1(1:end-2))/(2*dt);
     DH1 = histcounts(dS1,Bins);
-    DF1 = FindDominantFrequency(S1,1/dt);
+%     DF1 = FindDominantFrequency(S1,1/dt);
     end    
     F2 =@(s,t) arrayfun(@(t) FBMStochasticWave(t,'Seed',s,'Phasewarp',Phasewarp,'N_freq',N_freq,'T_wave',T_Wave),t);  
     
